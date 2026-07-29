@@ -1,0 +1,47 @@
+﻿@using QuizFlow.DTO
+@model QuizDTO
+@*
+    enctype="multipart/form-data" разбивает данные формы на отдельные блоки и переводит файлы из текста в байты.
+*@
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="p-4 p-md-5">
+                    <div class="text-center mb4">
+                        <h2 class="fw-bold text-primary">Create Quiz</h2>
+                    </div>
+                    <form asp-controller="Menu" asp-action="Create" method="post" enctype="multipart/form-data">
+                        <input asp-for="TeacherId" type="hidden" />
+                        <div class="form-floating mb-3">
+                            <input asp-for="Title" class="form-control" placeholder="Title" required />
+                            <label asp-for="Title">Title</label>
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Description" class="form-control" placeholder="Description" required />
+                            <label asp-for="Description">Description</label>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="TimeLimit" class="form-control" placeholder="TimeLimit" required />
+                            <label asp-for="TimeLimit">TimeLimit</label>
+                            <span asp-validation-for="TimeLimit" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="ImageFile" class="form-control" placeholder="Image"/>
+                            <span asp-validation-for="ImageFile" class="text-danger small"></span>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-3">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

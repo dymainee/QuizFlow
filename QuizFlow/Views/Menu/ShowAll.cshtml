@@ -1,0 +1,93 @@
+﻿@using QuizFlow.DTO
+@using QuizFlow.Models.Enums
+@model QuizShowDTO
+<div class="container my-4">
+
+    <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-8 col-lg-6">
+
+            <form asp-controller="Menu" asp-action="ShowAll" method="get" class="card p-4 shadow-sm border-0 rounded-4">
+
+                <div class="text-center mb-3">
+                    <h2 class="fw-bold text-primary mb-0">Quizzes</h2>
+                </div>
+
+                <div class="mb-3">
+                    <input type="text"
+                           asp-for="title_filter"
+                           class="form-control rounded-3"
+                           placeholder="Search by title" />
+                </div>
+
+                <div class="mb-3">
+                    <select name="selectedSort" class="form-select rounded-3">
+                        <option value="Date_Desc" selected="@(Model.sortField == "Date" && Model.sortOrder == SortOrder.Descending)">
+                            Most Recent
+                        </option>
+                        <option value="Date_Asc" selected="@(Model.sortField == "Date" && Model.sortOrder == SortOrder.Ascending)">
+                            Oldest First
+                        </option>
+                        <option value="Title_Asc" selected="@(Model.sortField == "Title" && Model.sortOrder == SortOrder.Ascending)">
+                            Title: A-Z
+                        </option>
+                        <option value="Title_Desc" selected="@(Model.sortField == "Title" && Model.sortOrder == SortOrder.Descending)">
+                            Title: Z-A
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 fw-bold">
+                    Apply
+                </button>
+
+            </form>
+
+        </div> 
+    </div>
+    <div class="row g-4 mt-4 ">
+        @if (User.IsInRole("Teacher"))
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden h-100" style="border-radius: 24px;">
+                    <img src="/Images/quizzes/add-quiz.jpg" class="card-img-top" style="height: 220px; object-fit: cover;">
+                    <div class="card-body p-2 text-center d-flex flex-column justify-content-between">
+                        <h5 class="card-title mb-2">Create a quiz</h5>
+                        <a asp-controller="Menu" asp-action="Create" class="btn mx-auto btn-primary w-50">
+                            Start
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        @foreach (Quiz quiz in Model.Quizzes)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-lg border-0 rounded-4 overflow-hidden h-100" style="border-radius: 24px;">
+                    @if (!string.IsNullOrEmpty(quiz.ImagePath))
+                    {
+                        <img src="@quiz.ImagePath" class="card-img-top" style="height: 220px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <img src="/Images/quizzes/default-quiz.jpg" class="card-img-top" style="height: 220px; object-fit: cover;">
+                    }
+                    <div class="card-body p-2 text-center d-flex flex-column justify-content-between">
+                        <h5 class="card-title">@quiz.Title</h5>
+                        <h5 class="card-title">@quiz.Description</h5>
+                        <a asp-controller="Menu" asp-action="Details" asp-route-id="@quiz.Id" class="btn mx-auto btn-primary w-50">
+                            Start
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+                        
+
+</div>
+
+
+
+
+
+

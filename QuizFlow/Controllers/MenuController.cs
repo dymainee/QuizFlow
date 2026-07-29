@@ -1,0 +1,70 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using QuizFlow.Application.Interfaces;
+using QuizFlow.DTO;
+using QuizFlow.Models;
+using System.Security.Claims;
+
+namespace QuizFlow.Controllers
+{
+    [Authorize]
+    public class MenuController : Controller
+    {
+        private readonly IQuizService _quizService;
+
+        public MenuController(IQuizService quizService)
+        {
+            _quizService = quizService;
+        }
+        [HttpGet]
+        public IActionResult Create() {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid currentTeacherID = Guid.Parse(id); //(текст) в объект типа Guid
+            var dto = new QuizDTO
+            {
+                TeacherId = currentTeacherID
+            };
+            return View(dto);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(QuizDTO dto) {
+            if (!ModelState.IsValid)
+            {
+                return View(dto);
+            }
+            string? imagePath = null;
+
+            if (dto.ImageFile != null) {
+                // Path правильно и безопасно работать со строками путей к файлам и папкам.
+                string extension = Path.GetExtension(dto.ImageFile.FileName); //Вырезаем расширение (.jpg, .png) и генерируем уникальное имя
+                string uniqFileName = Guid.NewGuid().ToString() + extension;
+                // wwwroot  Все файлы, которые лежат внутри wwwroot, становятся доступны пользователям через браузер.
+                string saveFolder = Path.Combine("wwwroot", "Images", "quizzes"); // склеивает имена папок в корректный путь
+
+                string fullPath = Path.Combine(saveFolder, uniqFileName); //"wwwroot\Images\quizzes\a1b2c3d4-5678.jpg"
+
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await dto.ImageFile.CopyToAsync(stream); //в этот новый файл.
+                }
+                //В Базу Данных мы сохраняем путь для браузера
+                imagePath = "/Images/quizzes/" + uniqFileName; //это веб-адрес (URL),
+                //ASP.NET Core принимает этот запрос, автоматически подставляет wwwroot перед адресом,
+                //находит файл wwwroot/Images/quizzes/photo.jpg на диске и отдаёт его картинкой пользователю.
+            }
+
+            Quiz quiz = new Quiz(title: dto.Title, description: dto.Description,timeLimit: dto.TimeLimit , imagePath: imagePath, teacherId: dto.TeacherId);
+            await _quizService.CreateAsync(quiz);
+            return RedirectToAction("Login", "User");
+        }
+        [HttpGet]
+        public async Task<IActionResult> ShowAll(QuizShowDTO dto) {
+            var quizzes = await _quizService.GetAllAsync(dto);
+            return View(quizzes);
+        }
+
+
+    }
+}
