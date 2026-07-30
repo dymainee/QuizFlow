@@ -2,7 +2,7 @@
 
 namespace QuizFlow.DTO
 {
-    public class QuizShowDTO : UniversalDTO
+    public class MenuQuizShowDTO : UniversalDTO
     {
         public string? title_filter { get; set; }
         public List<Quiz> Quizzes { get; set; } = new List<Quiz>();

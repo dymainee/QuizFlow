@@ -14,11 +14,6 @@ namespace QuizFlow.Infrastructure.Repositories
         public async Task CreateAsync(Quiz quiz) {
             await _modelSet.AddAsync(quiz);
         }
-
-        public async Task<Quiz?> GetByNameAsync(string title) {
-            return await _modelSet.FirstOrDefaultAsync(x => x.Title == title); //filter by name 
-        }
-
         
     }
 }

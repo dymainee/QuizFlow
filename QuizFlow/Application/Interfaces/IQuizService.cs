@@ -6,7 +6,6 @@ namespace QuizFlow.Application.Interfaces
     public interface IQuizService
     {
         public Task CreateAsync(Quiz quiz);
-        public Task<QuizShowDTO> GetAllAsync(QuizShowDTO dto);
 
     }
 }

@@ -11,7 +11,7 @@
                     <div class="text-center mb4">
                         <h2 class="fw-bold text-primary">Create Quiz</h2>
                     </div>
-                    <form asp-controller="Menu" asp-action="Create" method="post" enctype="multipart/form-data">
+                    <form asp-controller="Quiz" asp-action="Create" method="post" enctype="multipart/form-data">
                         <input asp-for="TeacherId" type="hidden" />
                         <div class="form-floating mb-3">
                             <input asp-for="Title" class="form-control" placeholder="Title" required />
