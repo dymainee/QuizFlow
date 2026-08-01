@@ -23,6 +23,8 @@ namespace QuizFlow.Application.Services
                 string searchTitle = dto.title_filter;
                 quizzes = quizzes.Where(x => x.Title.Contains(searchTitle)).ToList();
             }
+            var parts = 
+
 
             quizzes = (dto.sortField, dto.sortOrder) switch
             {

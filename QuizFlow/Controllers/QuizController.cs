@@ -4,6 +4,7 @@ using QuizFlow.DTO;
 using QuizFlow.Infrastructure.Interfaces;
 using QuizFlow.Models;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace QuizFlow.Controllers
 {
@@ -59,7 +60,33 @@ namespace QuizFlow.Controllers
 
             Quiz quiz = new Quiz(title: dto.Title, description: dto.Description, timeLimit: dto.TimeLimit, imagePath: imagePath, teacherId: dto.TeacherId);
             await _quizService.CreateAsync(quiz);
-            return RedirectToAction("Login", "User");
+            return RedirectToAction("AddQuestion", new {quizId = quiz.Id});
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddQuestion(Guid quizId) {
+            var quiz = await _quizService.GetQuizWithQuestionsAsync(quizId);
+            if (quiz == null) return NotFound();
+            var dto = new AddQuestionDTO
+            {
+                Id = quizId,
+                ExistingQuestions = quiz.Questions.ToList()
+            };
+            return View(dto); 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddQuestion(AddQuestionDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(dto);
+            }
+            for (int i = 0; i < dto.Options.Count; i++) {
+                dto.Options[i].isCorrect = (i == dto.CorrectAnswerIndex);
+            }
+            await _quizService.AddQuestionsToQuizAsync(dto);
+            return RedirectToAction("AddQuestion", new { quizId = dto.Id }); //quizId обратно в Get-метод, чтобы страница перезагрузилась
         }
     }
 }

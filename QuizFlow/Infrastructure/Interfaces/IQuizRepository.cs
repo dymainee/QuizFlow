@@ -5,5 +5,6 @@ namespace QuizFlow.Infrastructure.Interfaces
     public interface IQuizRepository : IRepository<Quiz>
     {
         public Task CreateAsync(Quiz quiz);
+        public Task<Quiz?> GetQuestionsAsync(Guid id);
     }
 }

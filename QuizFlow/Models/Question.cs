@@ -14,8 +14,10 @@ namespace QuizFlow.Models
         public Guid QuizId { get; set; }
         public ICollection<AnswerOption> AnswerOptions { get; set; } = new List<AnswerOption>();
         public Question() { }
+        //// DO NOT pass Guid.NewGuid() here!
+        //If Id is Guid.Empty -> EF Core marks it as NEW, automatically generates a GUID, and runs INSERT.
+        // - If Id is already set -> EF Core assumes it EXISTS in DB and tries UPDATE (causing DbUpdateConcurrencyException)
         public Question(string title, string description, string? imagePath, Guid quizId) {
-            Id = Guid.NewGuid();
             Title = title;
             Description = description;
             ImagePath = imagePath;

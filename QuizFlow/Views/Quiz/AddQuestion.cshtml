@@ -1,0 +1,110 @@
+﻿@using QuizFlow.DTO;
+@model AddQuestionDTO
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h1 class="h3 fw-bold text-dark m-0">Adding questions</h1>
+        <span class="badge bg-primary rounded-pill px-3 py-2">
+            Total Questions: @(Model.ExistingQuestions?.Count)
+        </span>
+    </div>
+    <div class="row g-4">
+        <div class="col-12 col-lg-5">
+            <div class="p-4 bg-light border rounded-3 sticky-top">
+                <h4 class="fw-bold mb-3">Add question</h4>
+                <form asp-controller="Quiz" asp-action="AddQuestion" method="post" enctype="multipart/form-data">
+                    <input asp-for="Id" type="hidden" />
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Title" class="form-control" placeholder="Title" required />
+                        <label asp-for="Title">Title</label>
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Description" class="form-control" placeholder="Description" required />
+                        <label asp-for="Description">Description</label>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="ImageFile" class="form-control" placeholder="Image" />
+                        <span asp-validation-for="ImageFile" class="text-danger small"></span>
+                    </div>
+                    <h5 class="fw-bold mb-3">Answer Options</h5>
+                    @for (int i = 0; i < 4; i++)
+                    {
+                        <div class="mb-3 p-3 border rounded-3 bg-white">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="badge bg-secondary">Answer @(i + 1)</span>
+                                <div class="form-check">
+                                    <input asp-for = "CorrectAnswerIndex" 
+                                           class="form-check-input"
+                                           type="radio"
+                                           value="@i"
+                                           id="correct_@i"
+                                         />
+                                    <label class="form-check-label text-success fw-bold small" for="correct_@i">
+                                        Correct answer
+                                    </label>
+                                </div>
+                            </div>
+
+                            <input asp-for="Options[i].Text"
+                                   class="form-control"
+                                   placeholder="Answer Text"
+                                   required />
+                            <span asp-validation-for="Options[i].Text" class="text-danger small"></span>
+                        </div>
+                       
+                    }
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-3">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-12 col-lg-7">
+            <h4 class="fw-bold mb-3">List of Questions</h4>
+
+            @if (Model.ExistingQuestions.Any())
+            {
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var question in Model.ExistingQuestions)
+                    {
+                        <div class="p-3 border rounded-3 bg-white shadow-sm d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                            <div class="flex-grow-1">
+                                <h5 class="fw-bold mb-1 text-dark">@question.Title</h5>
+                                <p class="text-muted small mb-0">@question.Description</p>
+                            </div>
+
+                            <div style="min-width: 240px;" class="w-100 w-md-auto">
+                                <select class="form-select form-select-sm">
+                                    <option selected disabled>Answer Options</option>
+                                    @if (question.AnswerOptions.Any())
+                                    {
+                                        @foreach (var answer in question.AnswerOptions)
+                                        {
+                                            <option value="@answer.Id">
+                                                @answer.Text @(answer.IsCorrect ? "✓" : "")
+                                            </option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option disabled>No answers were added</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center py-4">
+                    U didnt add any questions. Please Add to see your first question
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -9,7 +9,6 @@
         public bool IsCorrect { get; set; }
         public AnswerOption() { }
         public AnswerOption(string text, Guid questionId, bool isCorrect) {
-            Id = Guid.NewGuid();
             Text = text;
             QuestionId = questionId;
             IsCorrect = isCorrect;

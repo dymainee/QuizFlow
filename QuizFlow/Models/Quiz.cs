@@ -14,6 +14,8 @@ namespace QuizFlow.Models
         public TimeSpan TimeLimit { get; set; }
         public string? ImagePath { get; set; } //может быть без картинки
         public ICollection<Question> Questions { get; set; } = new List<Question>();
+
+        //public int? Grade {get; set;}
         public Quiz() { } //EFcore(Reflection)
         public Quiz(string title, string description, TimeSpan timeLimit, string imagePath, Guid teacherId)
         {

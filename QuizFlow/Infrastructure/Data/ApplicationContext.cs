@@ -10,12 +10,21 @@ namespace QuizFlow.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Quiz> Quizzes { get; set; }
+        public DbSet<Question> Questions { get; set; }
+
+        public DbSet<AnswerOption> AnswerOptions { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new StudentConfiguration());
             modelBuilder.ApplyConfiguration(new TeacherConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new QuizConfiguration());
+            modelBuilder.ApplyConfiguration(new AnswerConfiguration());
+            modelBuilder.ApplyConfiguration(new QuestionConfiguration());
 
         }
 

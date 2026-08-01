@@ -14,6 +14,17 @@ namespace QuizFlow.Infrastructure.Repositories
         public async Task CreateAsync(Quiz quiz) {
             await _modelSet.AddAsync(quiz);
         }
-        
+
+        public async Task<Quiz?> GetQuestionsAsync(Guid id) {
+            return await _modelSet
+                .Include(x => x.Questions)
+                    .ThenInclude(x => x.AnswerOptions)
+                       .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+    
+
+
+
     }
 }

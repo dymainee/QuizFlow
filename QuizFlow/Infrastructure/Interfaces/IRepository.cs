@@ -1,4 +1,6 @@
-﻿namespace QuizFlow.Infrastructure.Interfaces
+﻿using QuizFlow.Models;
+
+namespace QuizFlow.Infrastructure.Interfaces
 {
     public interface IRepository<Model> where Model : class
     {
