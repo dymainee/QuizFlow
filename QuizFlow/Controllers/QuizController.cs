@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QuizFlow.Application.Interfaces;
 using QuizFlow.DTO;
 using QuizFlow.Infrastructure.Interfaces;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace QuizFlow.Controllers
 {
+    [Authorize]
     public class QuizController : Controller
     {
         private readonly IQuizService _quizService;
@@ -87,6 +89,40 @@ namespace QuizFlow.Controllers
             }
             await _quizService.AddQuestionsToQuizAsync(dto);
             return RedirectToAction("AddQuestion", new { quizId = dto.Id }); //quizId обратно в Get-метод, чтобы страница перезагрузилась
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> EditQuestion(Guid quizId, Guid Id) {
+            var dto = await _quizService.GetQuestionForEditAsync(Id, quizId);
+            if (dto == null) return NotFound();
+            
+            return View(dto);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditQuestion(EditQuestionDTO dto) {
+            if (!ModelState.IsValid)
+            {
+                return View(dto);
+            }
+            await _quizService.UpdateQuestionAsync(dto);
+            return RedirectToAction("AddQuestion", new { quizId = dto.QuizId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteQuestionWithAnswers(Guid quizId, Guid Id) {
+            await _quizService.DeleteQuestionAsync(Id, quizId);
+            return RedirectToAction("AddQuestion", new { quizId = quizId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PublishQuiz(Guid quizId) {
+            await _quizService.PublishQuizAsync(quizId);
+            return RedirectToAction("ShowAll", "Menu");
+        }
+       
+        public IActionResult ArchiveQuiz(Guid quizId)
+        {
+            return RedirectToAction("ShowAll", "Menu");
         }
     }
 }

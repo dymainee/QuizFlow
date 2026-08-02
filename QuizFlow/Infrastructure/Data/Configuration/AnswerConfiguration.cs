@@ -13,7 +13,7 @@ namespace QuizFlow.Infrastructure.Data.Configuration
             builder.HasOne(x => x.Question)
                 .WithMany(x => x.AnswerOptions)
                 .HasForeignKey(x => x.QuestionId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -16,28 +16,29 @@ namespace QuizFlow.Application.Services
 
         public async Task<MenuQuizShowDTO> GetAllAsync(MenuQuizShowDTO dto)
         {
-            var quizzes = await _menuRepository.GetAllAsync(); //!Fix need to do filter in sql and then filter the value
+            var quizzes = await _menuRepository.GetAllAsync();
+
+            var filteredQuizzes = quizzes.Where(x => x.Status == QuizStatus.Published);
 
             if (!string.IsNullOrEmpty(dto.title_filter))
             {
                 string searchTitle = dto.title_filter;
-                quizzes = quizzes.Where(x => x.Title.Contains(searchTitle)).ToList();
+                filteredQuizzes = filteredQuizzes.Where(x => x.Title.Contains(searchTitle));
             }
-            var parts = 
 
-
-            quizzes = (dto.sortField, dto.sortOrder) switch
+            filteredQuizzes = (dto.sortField, dto.sortOrder) switch
             {
-                ("Title", SortOrder.Descending) => quizzes.OrderByDescending(x => x.Title).ToList(),
-                ("Title", _) => quizzes.OrderBy(x => x.Title).ToList(),
-                ("Date", SortOrder.Descending) => quizzes.OrderByDescending(x => x.CreatedAt).ToList(),
-                ("Date", _) => quizzes.OrderBy(x => x.CreatedAt).ToList(),
+                ("Title", SortOrder.Descending) => filteredQuizzes.OrderByDescending(x => x.Title),
+                ("Title", _) => filteredQuizzes.OrderBy(x => x.Title),
+                ("Date", SortOrder.Descending) => filteredQuizzes.OrderByDescending(x => x.CreatedAt),
+                ("Date", _) => filteredQuizzes.OrderBy(x => x.CreatedAt),
 
-                _ => quizzes.OrderByDescending(x => x.CreatedAt).ToList()
+                _ => filteredQuizzes.OrderByDescending(x => x.CreatedAt)
             };
 
-            dto.TotalCount = quizzes.Count();
-            dto.Quizzes = quizzes
+            dto.TotalCount = filteredQuizzes.Count();
+
+            dto.Quizzes = filteredQuizzes
                    .Skip((dto.PageNumber - 1) * dto.PageSize)
                    .Take(dto.PageSize)
                    .ToList();

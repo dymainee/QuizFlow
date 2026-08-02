@@ -85,6 +85,50 @@
                         
 
 </div>
+@{
+    int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+}
+@if (totalPages > 1)
+{
+    <div class="row mt-4">
+        <div class="col-12 d-flex justify-content-center align-items-center gap-2">
+            @if (Model.PageNumber > 1)
+            {
+                <a asp-action="ShowAll"
+                   asp-route-PageNumber="@(Model.PageNumber - 1)"
+                   asp-route-sortOrder="@Model.sortOrder"
+                   asp-route-sortField="@Model.sortField"
+                   asp-route-title_filter="@Model.title_filter"
+                   class="btn btn-sm btn-outline-secondary">
+                    &laquo;
+                </a>
+            }
+            @for (int page_n = 1; page_n <= totalPages; page_n++)
+
+            {
+                <a asp-action="ShowAll"
+                   asp-route-PageNumber="@page_n"
+                   asp-route-sortOrder="@Model.sortOrder"
+                   asp-route-sortField="@Model.sortField"
+                   asp-route-title_filter="@Model.title_filter">
+
+                    @page_n
+                </a>
+            }
+            @if (Model.PageNumber < totalPages)
+            {
+                <a asp-action="ShowAll"
+                   asp-route-PageNumber="@(Model.PageNumber + 1)"
+                   asp-route-sortOrder="@Model.sortOrder"
+                   asp-route-sortField="@Model.sortField"
+                   asp-route-title_filter="@Model.title_filter"
+                   class="btn btn-sm btn-outline-secondary">
+                    &raquo;
+                </a>
+            }
+        </div>
+    </div>
+}
 
 
 

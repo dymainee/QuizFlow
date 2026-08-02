@@ -1,0 +1,84 @@
+﻿@using QuizFlow.DTO
+@model EditQuestionDTO
+@*
+    <input asp-for="ExistingImagePath" в случае если пользователь не передаст новую картинку 
+*@
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="p-4 p-md-5">
+                    <div class="text-center mb4">
+                        <h2 class="fw-bold text-primary">Edit Question</h2>
+                    </div>
+                    <form asp-controller="Quiz" asp-action="EditQuestion" method="post" enctype="multipart/form-data">
+                        <input asp-for="Id" type="hidden" />
+                        <input asp-for="QuizId" type="hidden" />
+                        <input asp-for="ExistingImagePath" type="hidden" />
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Title" class="form-control" placeholder="Title" required />
+                            <label asp-for="Title">Title</label>
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Description" class="form-control" placeholder="Description" required />
+                            <label asp-for="Description">Description</label>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-4 p-3 border rounded-3 bg-light">
+                            <label class="form-label fw-bold text-secondary mb-2 d-block">Текущее изображение</label>
+
+                            <div class="mb-3 text-center">
+                                @if (!string.IsNullOrEmpty(Model.ExistingImagePath))
+                                {
+                                    <img src="@Model.ExistingImagePath" class="img-thumbnail rounded-3 shadow-sm" style="height: 220px; object-fit: cover; width: 100%;" alt="Question Image">
+                                }
+                                
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input asp-for="NewImageFile" class="form-control" placeholder="Image" />
+                                <span asp-validation-for="NewImageFile" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <h5 class="fw-bold mb-3">Answer Options</h5>
+                        @for (int i = 0; i < Model.Options.Count; i++)
+                        {
+                            <input asp-for="Options[i].Id" type="hidden" />
+
+                            <div class="mb-3 p-3 border rounded-3 bg-white shadow-sm">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-secondary">Answer @(i + 1)</span>
+
+                                    <div class="form-check">
+                                        <input asp-for="CorrectAnswerIndex"
+                                               class="form-check-input"
+                                               type="radio"
+                                               value="@i"
+                                               id="correct_@i" />
+
+                                        <label class="form-check-label text-success fw-bold small" for="correct_@i">
+                                            Correct answer
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <input asp-for="Options[i].Text"
+                                       class="form-control"
+                                       placeholder="Answer Text"
+                                       required />
+                                <span asp-validation-for="Options[i].Text" class="text-danger small"></span>
+                            </div>
+                        }
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-3">Edit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

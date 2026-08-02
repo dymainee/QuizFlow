@@ -95,6 +95,24 @@
                                     }
                                 </select>
                             </div>
+                            <a asp-controller="Quiz"
+                               asp-action="EditQuestion"
+                               asp-route-id="@question.Id"
+                               asp-route-quizId="@Model.Id"
+                               class="btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
+                               Edit
+                            </a>
+                            <form asp-controller="Quiz"
+                                  asp-action="DeleteQuestionWithAnswers"
+                                  asp-route-id="@question.Id"
+                                  asp-route-quizId="@Model.Id"
+                                  method="post"
+                                  class="d-inline m-0">
+                                <button type="submit"
+                                        class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">
+                                    Delete
+                                </button>
+                            </form>
                         </div>
                     }
                 </div>
@@ -105,6 +123,24 @@
                     U didnt add any questions. Please Add to see your first question
                 </div>
             }
+            <div class="d-flex justify-content-start align-items-center gap-2 mt-auto pt-3">     
+                <a asp-controller="Quiz"
+                   asp-action="ArchiveQuiz"
+                   class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
+                     Archive
+                </a>
+
+                <form asp-controller="Quiz"
+                      asp-action="PublishQuiz"
+                      asp-route-quizId="@Model.Id"
+                      method="post"
+                      class="d-inline m-0">
+                    <button type="submit"
+                            class="btn btn-outline-success btn-sm d-flex align-items-center gap-1">
+                        Publish
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
