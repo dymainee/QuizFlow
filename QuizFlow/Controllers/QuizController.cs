@@ -20,6 +20,7 @@ namespace QuizFlow.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Teacher")]
         public IActionResult Create()
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -114,15 +115,37 @@ namespace QuizFlow.Controllers
             return RedirectToAction("AddQuestion", new { quizId = quizId });
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> PublishQuiz(Guid quizId) {
+        public async Task<IActionResult> PublishQuiz(Guid quizId)
+        {
             await _quizService.PublishQuizAsync(quizId);
             return RedirectToAction("ShowAll", "Menu");
         }
-       
+
+
         public IActionResult ArchiveQuiz(Guid quizId)
         {
             return RedirectToAction("ShowAll", "Menu");
+        }
+        [HttpPost]
+        public async Task<IActionResult> PublishQuizUserMenu(Guid id)
+        {
+            await _quizService.PublishQuizAsync(id);
+            return RedirectToAction("ShowTeacherProfile", "User");
+        }
+        [HttpPost]
+        public async Task<IActionResult> ArchiveQuizUserMenu(Guid id)
+        {
+            await _quizService.ArchiveQuizAsync(id);
+            return RedirectToAction("ShowTeacherProfile", "User");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteQuiz(Guid id)
+        {
+            await _quizService.DeleteQuizAsync(id);
+            return RedirectToAction("ShowTeacherProfile", "User");
         }
     }
 }

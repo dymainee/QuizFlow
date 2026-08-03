@@ -1,0 +1,240 @@
+﻿@using QuizFlow.DTO
+@model TeacherProfileDTO
+@using QuizFlow.Models.Enums
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h1 class="h3 fw-bold text-dark m-0">Teacher Profile</h1>
+    </div>
+    <div class="row g-4">
+        <div class="col-12 col-lg-5">
+            <div class="p-4 bg-light border rounded-3 sticky-top">
+                <form asp-controller="User" asp-action="ShowTeacherProfile" method="post">
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Name" class="form-control" placeholder="Name" required />
+                        <label asp-for="Name">Name</label>
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Surname" class="form-control" placeholder="Surname" required />
+                        <label asp-for="Surname">Surname</label>
+                        <span asp-validation-for="Surname" class="text-danger small"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Email" class="form-control" placeholder="Email" />
+                        <label asp-for="Email">Email</label>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Password"/>
+                        <label asp-for="Password">Password</label>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="DateOfBirth" type="date" class="form-control" />
+                        <label asp-for="DateOfBirth">Date of Birth</label>
+                        <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="WorkPlace" class="form-control" placeholder="Workplace" />
+                        <label asp-for="WorkPlace">Workplace</label>
+                        <span asp-validation-for="WorkPlace" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Specialization" class="form-control" placeholder="Specialization" />
+                        <label asp-for="Specialization">Specialization</label>
+                        <span asp-validation-for="Specialization" class="text-danger small"></span>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 fw-bold">
+                        Apply
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="col-12 col-lg-7">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold m-0">List of Quizzes</h4>
+
+                <a asp-controller="User"
+                   asp-action="ReturnToMenu"
+                   class="btn btn-primary btn-sm d-flex align-items-center gap-1">
+                    Return To Menu
+                </a>
+            </div>
+
+            <div class="p-3 border rounded-3 bg-white shadow-sm mb-4">
+                <form asp-controller="User" asp-action="ShowTeacherProfile" method="get">
+                    <h5 class="fw-bold text-primary mb-3">Search & Filtering</h5>
+
+                    <div class="row g-2">
+                        <div class="col-12 col-md-6">
+                            <input type="text"
+                                   asp-for="title_filter"
+                                   class="form-control rounded-3"
+                                   placeholder="Search by title..." />
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <select name="selectedSort" class="form-select rounded-3">
+                                <option value="Published_Desc" selected="@(Model.universalDTO.sortField == "Published" && Model.universalDTO.sortOrder == SortOrder.Descending)">
+                                    Published (First)
+                                </option>
+                                <option value="Published_Asc" selected="@(Model.universalDTO.sortField == "Published" && Model.universalDTO.sortOrder == SortOrder.Ascending)">
+                                    Published (Last)
+                                </option>
+                                <option value="Archived_Desc" selected="@(Model.universalDTO.sortField == "Archived" && Model.universalDTO.sortOrder == SortOrder.Descending)">
+                                    Archived (First)
+                                </option>
+                                <option value="Archived_Asc" selected="@(Model.universalDTO.sortField == "Archived" && Model.universalDTO.sortOrder == SortOrder.Ascending)">
+                                    Archived (Last)
+                                </option>
+                                <option value="Date_Desc" selected="@(Model.universalDTO.sortField == "Date" && Model.universalDTO.sortOrder == SortOrder.Descending)">
+                                    Newest First
+                                </option>
+                                <option value="Date_Asc" selected="@(Model.universalDTO.sortField == "Date" && Model.universalDTO.sortOrder == SortOrder.Ascending)">
+                                    Oldest First
+                                </option>
+                                <option value="Title_Asc" selected="@(Model.universalDTO.sortField == "Title" && Model.universalDTO.sortOrder == SortOrder.Ascending)">
+                                    Title: A-Z
+                                </option>
+                                <option value="Title_Desc" selected="@(Model.universalDTO.sortField == "Title" && Model.universalDTO.sortOrder == SortOrder.Descending)">
+                                    Title: Z-A
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-3 rounded-3 fw-bold">
+                        Apply
+                    </button>
+                </form>
+            </div>
+
+            @if (Model.Quizzes.Any())
+            {
+                <div class="row g-3">
+                    @foreach (Quiz quiz in Model.Quizzes)
+                    {
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="card shadow-lg border-0 rounded-4 overflow-hidden h-100" style="border-radius: 24px;">
+                                @if (!string.IsNullOrEmpty(quiz.ImagePath))
+                                {
+                                    <img src="@quiz.ImagePath" class="card-img-top" style="height: 140px; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <img src="/Images/quizzes/default-quiz.jpg" class="card-img-top" style="height: 140px; object-fit: cover;">
+                                }
+                                <div class="card-body p-2 text-center d-flex flex-column justify-content-between">
+                                    <h5 class="card-title">@quiz.Title</h5>
+                                    <h5 class="card-title">@quiz.Description</h5>
+                                    <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                                        @if (quiz.Status == QuizStatus.Archived)
+                                        {
+                                            <form asp-controller="Quiz"
+                                                  asp-action="PublishQuizUserMenu"
+                                                  asp-route-id="@quiz.Id"
+                                                  method="post"
+                                                  class="m-0">
+                                                <button type="submit"
+                                                        class="btn btn-outline-success btn-sm d-flex align-items-center gap-1">
+                                                    Publish
+                                                </button>
+                                            </form>
+                                        }
+                                        @if (quiz.Status == QuizStatus.Published)
+                                        {
+                                            <form asp-controller="Quiz"
+                                                  asp-action="ArchiveQuizUserMenu"
+                                                  asp-route-id="@quiz.Id"
+                                                  method="post"
+                                                  class="m-0">
+                                                <button type="submit"
+                                                        class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
+                                                    Archive
+                                                </button>
+                                            </form>
+                                        }
+
+                                        <form asp-controller="Quiz"
+                                              asp-action="DeleteQuiz"
+                                              asp-route-id="@quiz.Id"
+                                              method="post"
+                                              class="m-0">
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm d-flex align-items-center gap-1">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                           
+                            
+                        </div>
+                    }
+                </div>
+                    
+                int totalPages = (int)Math.Ceiling((double)Model.universalDTO.TotalCount / Model.universalDTO.PageSize);
+                
+                @if (totalPages > 1)
+                {
+                    <div class="row mt-4">
+                        <div class="col-12 d-flex justify-content-end align-items-center gap-2">
+                            @if (Model.universalDTO.PageNumber > 1)
+                            {
+                                <a asp-action="ShowTeacherProfile"
+                                   asp-route-PageNumber="@(Model.universalDTO.PageNumber - 1)"
+                                   asp-route-sortOrder="@Model.universalDTO.sortOrder"
+                                   asp-route-sortField="@Model.universalDTO.sortField"
+                                   asp-route-title_filter="@Model.title_filter"
+                                   class="btn btn-outline-secondary fs-5 px-3">
+                                    &laquo;
+                                </a>
+                            }
+                            @for (int page_n = 1; page_n <= totalPages; page_n++)
+
+                            {
+                                <a asp-action="ShowTeacherProfile"
+                                   asp-route-PageNumber="@page_n"
+                                   asp-route-sortOrder="@Model.universalDTO.sortOrder"
+                                   asp-route-sortField="@Model.universalDTO.sortField"
+                                   asp-route-title_filter="@Model.title_filter" class="fs-5 px-3">
+
+                                    @page_n
+                                </a>
+                            }
+                            @if (Model.universalDTO.PageNumber < totalPages)
+                            {
+                                <a asp-action="ShowTeacherProfile"
+                                   asp-route-PageNumber="@(Model.universalDTO.PageNumber + 1)"
+                                   asp-route-sortOrder="@Model.universalDTO.sortOrder"
+                                   asp-route-sortField="@Model.universalDTO.sortField"
+                                   asp-route-title_filter="@Model.title_filter"
+                                   class="btn btn-outline-secondary fs-5 px-3">
+                                    &raquo;
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info text-center py-4 rounded-3 border">
+                    No quizzes found. Reset filters or create a new quiz.
+                </div>
+            }
+        </div>
+            
+        </div>
+    </div>
+</div>

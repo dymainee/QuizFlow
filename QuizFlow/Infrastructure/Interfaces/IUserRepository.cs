@@ -6,5 +6,8 @@ namespace QuizFlow.Infrastructure.Interfaces
     {
         public Task<User?> GetByEmailAsync(string email);
         public Task CreateAsync(User user);
-    }
-}
+        public Task<Teacher?> GetAllQuizzesAsync(Guid id);
+        public Task<Teacher?> GetAllTeacherAsync(Guid id);
+     }
+
+ }

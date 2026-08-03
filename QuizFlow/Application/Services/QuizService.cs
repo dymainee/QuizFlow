@@ -133,5 +133,18 @@ namespace QuizFlow.Application.Services
             quiz.Status = QuizStatus.Published;
             await _quizRepository.SaveChangesAsync();
         }
+        public async Task ArchiveQuizAsync(Guid quizId)
+        {
+            var quiz = await _quizRepository.GetByIdAsync(quizId);
+            if (quiz == null) return;
+            quiz.Status = QuizStatus.Archived;
+            await _quizRepository.SaveChangesAsync();
+        }
+        public async Task DeleteQuizAsync(Guid quizId)
+        {
+            var quiz = await _quizRepository.GetByIdAsync(quizId);
+            await _quizRepository.DeleteAsync(quizId);
+            await _quizRepository.SaveChangesAsync();
+        }
     }
 }

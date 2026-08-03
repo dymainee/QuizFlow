@@ -12,5 +12,7 @@ namespace QuizFlow.Application.Interfaces
         public Task UpdateQuestionAsync(EditQuestionDTO dto);
         public Task DeleteQuestionAsync(Guid questionId, Guid quizId);
         public Task PublishQuizAsync(Guid quizId);
+        public Task ArchiveQuizAsync(Guid quizId);
+        public Task DeleteQuizAsync(Guid quizId);
     }
 }

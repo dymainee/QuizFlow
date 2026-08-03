@@ -21,6 +21,19 @@ namespace QuizFlow.Infrastructure.Repositories
         {
             await _modelSet.AddAsync(user);
         }
+        public async Task<Teacher?> GetAllQuizzesAsync(Guid id) {
+            return await _modelSet
+            .OfType<Teacher>() // берёт из базы только те записи, которые являются учителями, и сразу даёт доступ к полям класса
+            .Include(x => x.Quizzes)
+            .FirstOrDefaultAsync(x => x.Id == id);
+            //Генерирует SQL JOIN: Фильтрует
+        }
+        public async Task<Teacher?> GetAllTeacherAsync(Guid id)
+        {
+            return await _modelSet
+            .OfType<Teacher>() 
+            .FirstOrDefaultAsync(x => x.Id == id);
+        }
 
 
     }

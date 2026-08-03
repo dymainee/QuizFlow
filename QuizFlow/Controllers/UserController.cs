@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using QuizFlow.Application.Interfaces;
+using QuizFlow.Application.Services;
 using QuizFlow.DTO;
 using QuizFlow.Models.Enums;
+using System.Security.Claims;
 
 namespace QuizFlow.Controllers
     //
@@ -10,10 +13,10 @@ namespace QuizFlow.Controllers
     // можно ли ДТО в Сервисы 
     public class UserController : Controller
     {
-        private readonly IAuthService _authService;
-        public UserController(IAuthService authService)
+        private readonly IUserService _userService;
+        public UserController(IUserService userService)
         {
-            _authService = authService;
+            _userService = userService;
         }
 
 
@@ -31,7 +34,7 @@ namespace QuizFlow.Controllers
             }
             try
             {   
-                var token = await _authService.LoginAsync(dto);
+                var token = await _userService.LoginAsync(dto);
                 //сервер отправляет обратно
                 Response.Cookies.Append("jwt", token);
                 return RedirectToAction("ShowAll", "Menu");
@@ -54,7 +57,7 @@ namespace QuizFlow.Controllers
             }
             try
             {
-                await _authService.RegisterAsync(dto);
+                await _userService.RegisterAsync(dto);
                 return RedirectToAction("Login");
             }
             catch (Exception ex)
@@ -78,13 +81,77 @@ namespace QuizFlow.Controllers
             }
             try
             {
-                await _authService.RegisterAsync(dto);
+                await _userService.RegisterAsync(dto);
                 return RedirectToAction("Login");
             }
             catch (Exception ex) {
                 return View(dto);
             }
         }
+        [HttpGet]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> ShowStudentProfile() {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(id)) return Unauthorized();
+            Guid userId = Guid.Parse(id);
+            StudentProfileDTO dto = await _userService.GetStudentProfileAsync(userId);
+            return View(dto);
+           
+        }
+        [HttpPost]
+        public async Task<IActionResult> ShowStudentProfile(StudentProfileDTO dto) {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = Guid.Parse(id);
+            if (!ModelState.IsValid)
+            {
+                return View(dto);
+            }
+
+            await _userService.UpdateStudentProfile(userId, dto);
+            return RedirectToAction("ShowStudentProfile");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> ShowTeacherProfile(TeacherProfileDTO dto, string selectedSort)
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = Guid.Parse(id);
+            if (string.IsNullOrEmpty(id)) return Unauthorized();
+            dto.universalDTO ??= new UniversalDTO();
+            if (!string.IsNullOrEmpty(selectedSort))
+            {
+                var parts = selectedSort.Split('_');
+                dto.universalDTO.sortField = parts[0];
+                dto.universalDTO.sortOrder = parts[1] == "Asc" ? SortOrder.Ascending : SortOrder.Descending;
+
+            }
+            TeacherProfileDTO ouputdto = await _userService.GetTeacherProfileAsync(userId, dto);
+            return View(ouputdto);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ShowTeacherProfile(TeacherProfileDTO dto)
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = Guid.Parse(id);
+            if (!ModelState.IsValid)
+            {
+                return View(dto);
+            }
+            await _userService.UpdateTeacherProfile(userId,dto);
+            return RedirectToAction("ShowTeacherProfile");
+        }
+
+
+        public IActionResult ReturnToMenu()
+        {
+            return RedirectToAction("ShowAll", "Menu");
+        }
+
+
+
+
 
     }
 }

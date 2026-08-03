@@ -25,7 +25,7 @@ builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 
 builder.Services.AddScoped<IMenuService, MenuService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IHashService, HashService>();
 //builder.Configuration — это объект, который содержит все настройки приложения из appsettings.json
