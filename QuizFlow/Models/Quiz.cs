@@ -13,6 +13,7 @@ namespace QuizFlow.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public TimeSpan TimeLimit { get; set; }
         public string? ImagePath { get; set; } //может быть без картинки
+        public ICollection<QuizSession> QuizSessions { get; set; } = new List<QuizSession>();
         public ICollection<Question> Questions { get; set; } = new List<Question>();
 
         //public int? Grade {get; set;}

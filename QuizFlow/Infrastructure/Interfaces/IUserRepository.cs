@@ -8,6 +8,7 @@ namespace QuizFlow.Infrastructure.Interfaces
         public Task CreateAsync(User user);
         public Task<Teacher?> GetAllQuizzesAsync(Guid id);
         public Task<Teacher?> GetAllTeacherAsync(Guid id);
+        public Task<Student?> GetStudentWithSessionsAsync(Guid id);
      }
 
  }

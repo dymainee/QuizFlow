@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizFlow.Data;
 
@@ -11,9 +12,11 @@ using QuizFlow.Data;
 namespace QuizFlow.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20260806175226_added_UserAnswer_and_QuizSessionDB")]
+    partial class added_UserAnswer_and_QuizSessionDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,8 +135,6 @@ namespace QuizFlow.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("QuizId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("quizSessions");
                 });
@@ -275,15 +276,7 @@ namespace QuizFlow.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("QuizFlow.Models.Student", "Student")
-                        .WithMany("QuizSessions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.Navigation("Quiz");
-
-                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("QuizFlow.Models.UserAnswer", b =>
@@ -330,11 +323,6 @@ namespace QuizFlow.Migrations
             modelBuilder.Entity("QuizFlow.Models.QuizSession", b =>
                 {
                     b.Navigation("UserAnswers");
-                });
-
-            modelBuilder.Entity("QuizFlow.Models.Student", b =>
-                {
-                    b.Navigation("QuizSessions");
                 });
 
             modelBuilder.Entity("QuizFlow.Models.Teacher", b =>

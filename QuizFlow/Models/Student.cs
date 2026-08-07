@@ -4,6 +4,7 @@ namespace QuizFlow.Models
 {
    public class Student : User
     {
+        public List<QuizSession> QuizSessions { get; set; } = new List<QuizSession>();
         public Student() { }
 
         public Student(string username, string passwordHash, string email, string name, string surname, DateOnly dateofbirth)

@@ -90,13 +90,21 @@ namespace QuizFlow.Controllers
         }
         [HttpGet]
         [Authorize(Roles = "Student")]
-        public async Task<IActionResult> ShowStudentProfile() {
+        public async Task<IActionResult> ShowStudentProfile(StudentProfileDTO dto, string selectedSort)
+        {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(id)) return Unauthorized();
             Guid userId = Guid.Parse(id);
-            StudentProfileDTO dto = await _userService.GetStudentProfileAsync(userId);
-            return View(dto);
-           
+            if (!string.IsNullOrEmpty(selectedSort))
+            {
+                var parts = selectedSort.Split('_');
+                dto.universalDTO.sortField = parts[0];
+                dto.universalDTO.sortOrder = parts[1] == "Asc" ? SortOrder.Ascending : SortOrder.Descending;
+
+            }
+            StudentProfileDTO ouputdto = await _userService.GetStudentProfileAsync(userId, dto);
+            return View(ouputdto);
+
         }
         [HttpPost]
         public async Task<IActionResult> ShowStudentProfile(StudentProfileDTO dto) {

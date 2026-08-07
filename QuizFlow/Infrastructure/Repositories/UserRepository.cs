@@ -35,6 +35,14 @@ namespace QuizFlow.Infrastructure.Repositories
             .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<Student?> GetStudentWithSessionsAsync(Guid id)
+        {
+            return await _modelSet
+                .OfType<Student>()
+                .Include(x => x.QuizSessions)    
+                    .ThenInclude(x => x.Quiz)   
+                .FirstOrDefaultAsync(s => s.Id == id);
+        }
 
     }
 }

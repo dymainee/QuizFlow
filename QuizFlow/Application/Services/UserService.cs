@@ -63,7 +63,7 @@ namespace QuizFlow.Application.Services
         public async Task<TeacherProfileDTO> GetTeacherProfileAsync(Guid id, TeacherProfileDTO inputDto) {
             Teacher? teacher = await _userRepository.GetAllQuizzesAsync(id); //casting as Teacher 
 
-            IEnumerable<Quiz> filteredQuizzes = teacher.Quizzes ?? new List<Quiz>();
+            IEnumerable<Quiz> filteredQuizzes = teacher.Quizzes;
             if (!string.IsNullOrEmpty(inputDto.title_filter)) {
                 filteredQuizzes = filteredQuizzes.Where(x => x.Title.Contains(inputDto.title_filter));
             }
@@ -111,9 +111,36 @@ namespace QuizFlow.Application.Services
 
         }
 
-        public async Task<StudentProfileDTO> GetStudentProfileAsync(Guid Id)
+        public async Task<StudentProfileDTO> GetStudentProfileAsync(Guid Id, StudentProfileDTO inputDto)
         {
-            Student? student = await _userRepository.GetByIdAsync(Id) as Student; //casting 
+            //Student? student = await _userRepository.GetByIdAsync(Id) as Student; //casting 
+            Student? student = await _userRepository.GetStudentWithSessionsAsync(Id);
+            if (student == null)
+            {
+                return null;
+            }
+            var filteredSessions = student.QuizSessions
+                    .Where(x => x.FinishedAt != null)
+                    .AsEnumerable();
+            if (!string.IsNullOrEmpty(inputDto.title_filter))
+            {
+                filteredSessions = filteredSessions.Where(x => x.Quiz.Title.Contains(inputDto.title_filter));
+            }
+            filteredSessions = (inputDto.universalDTO?.sortField, inputDto.universalDTO?.sortOrder) switch
+            {
+                ("Title", SortOrder.Descending) => filteredSessions.OrderByDescending(x => x.Quiz.Title),
+                ("Title", _) => filteredSessions.OrderBy(x => x.Quiz.Title),
+                ("Date", SortOrder.Descending) => filteredSessions.OrderByDescending(x => x.FinishedAt),
+                ("Date", _) => filteredSessions.OrderBy(x => x.FinishedAt),
+
+                _ => filteredSessions.OrderByDescending(x => x.FinishedAt)
+            };
+            inputDto.universalDTO.TotalCount = filteredSessions.Count();
+
+            var pagedSessions = filteredSessions
+                    .Skip((inputDto.universalDTO.PageNumber - 1) * inputDto.universalDTO.PageSize)
+                    .Take(inputDto.universalDTO.PageSize)
+                    .ToList();
 
             StudentProfileDTO dto = new StudentProfileDTO
             {
@@ -123,6 +150,16 @@ namespace QuizFlow.Application.Services
                 Name = student.Name,
                 Surname = student.Surname,
                 DateOfBirth = student.DateOfBirth,
+                universalDTO = inputDto.universalDTO,
+                title_filter = inputDto.title_filter,
+
+                userGames = pagedSessions.Select(qs => new UserQuizSessionDTO
+                {
+                    SessionId = qs.Id, 
+                    QuizTitle = qs.Quiz.Title,
+                    Score = qs.Score,
+                    FinishedAt = qs.FinishedAt
+                }).ToList()
             };
             return dto;
         }

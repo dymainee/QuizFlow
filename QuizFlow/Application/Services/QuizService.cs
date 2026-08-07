@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using QuizFlow.Application.Interfaces;
 using QuizFlow.DTO;
 using QuizFlow.Infrastructure.Interfaces;
+using QuizFlow.Infrastructure.Repositories;
 using QuizFlow.Models;
 using QuizFlow.Models.Enums;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -146,5 +147,6 @@ namespace QuizFlow.Application.Services
             await _quizRepository.DeleteAsync(quizId);
             await _quizRepository.SaveChangesAsync();
         }
+        
     }
 }
