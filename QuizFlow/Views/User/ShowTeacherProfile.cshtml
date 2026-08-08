@@ -12,15 +12,14 @@
         <div class="col-12 col-lg-5">
             <div class="p-4 bg-light border rounded-3 sticky-top">
                 <form asp-controller="User" asp-action="ShowTeacherProfile" method="post">
-
                     <div class="form-floating mb-3">
-                        <input asp-for="Name" class="form-control" placeholder="Name" required />
+                        <input asp-for="Name" class="form-control" placeholder="Name" />
                         <label asp-for="Name">Name</label>
                         <span asp-validation-for="Name" class="text-danger small"></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input asp-for="Surname" class="form-control" placeholder="Surname" required />
+                        <input asp-for="Surname" class="form-control" placeholder="Surname" />
                         <label asp-for="Surname">Surname</label>
                         <span asp-validation-for="Surname" class="text-danger small"></span>
                     </div>
@@ -32,7 +31,7 @@
 
                     <div class="form-floating mb-3">
                         <input asp-for="Password" type="password" class="form-control" placeholder="Password"/>
-                        <label asp-for="Password">Password</label>
+                        <label asp-for="Password">New Password (leave empty to keep current)</label>
                         <span asp-validation-for="Password" class="text-danger small"></span>
                     </div>
 

@@ -120,8 +120,7 @@ namespace QuizFlow.Application.Services
                 return null;
             }
             var filteredSessions = student.QuizSessions
-                    .Where(x => x.FinishedAt != null)
-                    .AsEnumerable();
+                    .Where(x => x.FinishedAt != null);
             if (!string.IsNullOrEmpty(inputDto.title_filter))
             {
                 filteredSessions = filteredSessions.Where(x => x.Quiz.Title.Contains(inputDto.title_filter));

@@ -15,7 +15,7 @@ namespace QuizFlow.Models
         public string PasswordHash { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public DateTime AccountCreatedAt { get; set; } = DateTime.UtcNow;
-        public UserRole Role { get; protected set; }
+        public UserRole Role { get;  set; }
         protected User() { }
         protected User(string username, string email, string passwordHash, UserRole role, string name, string surname, DateOnly dateofbirth)
         {

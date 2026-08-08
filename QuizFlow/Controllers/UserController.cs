@@ -110,11 +110,6 @@ namespace QuizFlow.Controllers
         public async Task<IActionResult> ShowStudentProfile(StudentProfileDTO dto) {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Guid userId = Guid.Parse(id);
-            if (!ModelState.IsValid)
-            {
-                return View(dto);
-            }
-
             await _userService.UpdateStudentProfile(userId, dto);
             return RedirectToAction("ShowStudentProfile");
         }
@@ -143,10 +138,6 @@ namespace QuizFlow.Controllers
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Guid userId = Guid.Parse(id);
-            if (!ModelState.IsValid)
-            {
-                return View(dto);
-            }
             await _userService.UpdateTeacherProfile(userId,dto);
             return RedirectToAction("ShowTeacherProfile");
         }

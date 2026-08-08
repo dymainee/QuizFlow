@@ -25,6 +25,7 @@ builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 builder.Services.AddScoped<IQuizSessionRepository, QuizSessionRepository>();
 
 builder.Services.AddScoped<IQuizSessionService, QuizSessionService>();
+builder.Services.AddSingleton<ILobbyService, LobbyServiceMultiplayer>();
 builder.Services.AddScoped<IMenuService, MenuService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -36,6 +37,7 @@ builder.Services.addAuth(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -6,7 +6,7 @@ namespace QuizFlow.DTO
     {
         public Guid id { get; set; }
         public string Username { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
+        public string? Password { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Surname { get; set; } = string.Empty;
@@ -29,8 +29,8 @@ namespace QuizFlow.DTO
 
     public class TeacherProfileDTO : ProfileUserDTO
     {
-        public string WorkPlace { get; init; } = string.Empty;
-        public string Specialization { get; init; } = string.Empty;
+        public string WorkPlace { get; set; } = string.Empty;
+        public string Specialization { get; set; } = string.Empty;
         public List<Quiz> Quizzes { get; set; } = new List<Quiz>(); //N + 1 better to create anoher DTO List<TeacherQuizes>
         public UniversalDTO universalDTO { get; set; } = new UniversalDTO();
         public string? title_filter { get; set; }

@@ -74,12 +74,24 @@
                     <div class="card-body p-2 text-center d-flex flex-column justify-content-between">
                         <h5 class="card-title">@quiz.Title</h5>
                         <h5 class="card-title">@quiz.Description</h5>
-                        <form asp-controller="QuizSession" asp-action="StartQuizSession" method="post">
-                            <input type="hidden" name="quizId" value="@quiz.Id" />
-                            <button type="submit" class="btn btn-primary w-50">
-                                Start
-                            </button>
-                        </form>
+                        @if (User.IsInRole("Teacher"))
+                        {
+                            <a asp-controller="QuizSession"
+                            asp-action="LobbyHost"
+                            asp-route-quizId="@quiz.Id"
+                            class="btn btn-outline-success w-100 mb-2">
+                                Create lobby
+                            </a>
+                        }
+                        else
+                        {
+                            <form asp-controller="QuizSession" asp-action="StartQuizSession" method="post">
+                                <input type="hidden" name="quizId" value="@quiz.Id" />
+                                <button type="submit" class="btn btn-primary w-50">
+                                    Start
+                                </button>
+                            </form>
+                        }
                     </div>
                 </div>
             </div>
