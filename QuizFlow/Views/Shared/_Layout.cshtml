@@ -18,7 +18,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1 align-items-center">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="RegisterStudent">RegisterStudent</a>
                         </li>
@@ -35,6 +35,27 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="User" asp-action="ShowTeacherProfile"> My profile</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Student"))
+                        {
+                            <li class="nav-item d-flex align-items-center">
+                                <form asp-controller="QuizSession" asp-action="JoinLobby" method="get" class="d-flex align-items-center gap-2">
+                                    <input type="text"
+                                           name="roomCode"
+                                           class="form-control form-control-sm"
+                                           placeholder="Enter Code"
+                                           required />
+                                    <button type="submit" class="btn btn-primary btn-sm text-nowrap">
+                                        Join
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        @if (User.IsInRole("Teacher"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="QuizSession" asp-action="GetTeacherMultiplayerResults">Students Results</a>
                             </li>
                         }
                     </ul>

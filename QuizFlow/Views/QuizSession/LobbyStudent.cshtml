@@ -1,0 +1,27 @@
+﻿<div class="text-center my-5">
+    <h2>U connected to this game: @Model.GroupName</h2>
+    <p class="text-muted fs-4">Waiting for the teacher...</p>
+</div>
+
+<form id="startQuizForm" asp-controller="QuizSession" asp-action="StartQuizSession" method="post" style="display:none;">
+    <input type="hidden" id="quizIdInput" name="quizId" value="" />
+    <input type="hidden" id="groupNameInput" name="groupName" value="" />
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    const hub = new signalR.HubConnectionBuilder().withUrl("/quizHub").build();
+
+    // Принимаем два параметра: quizId и groupName
+    hub.on("QuizStarted", (quizId, groupName) => {
+        document.getElementById("quizIdInput").value = quizId;
+        document.getElementById("groupNameInput").value = groupName;
+
+        // Автоматически отправляем POST-форму
+        document.getElementById("startQuizForm").submit();
+    });
+
+    hub.start()
+        .then(() => hub.invoke("JoinLobbyGroup", "@Model.RoomCode"))
+        .catch(err => console.error("SignalR Error:", err));
+</script>

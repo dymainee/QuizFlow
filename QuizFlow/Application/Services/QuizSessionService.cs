@@ -1,8 +1,10 @@
-﻿using QuizFlow.Application.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
+using QuizFlow.Application.Interfaces;
 using QuizFlow.DTO;
 using QuizFlow.Infrastructure.Interfaces;
 using QuizFlow.Infrastructure.Repositories;
 using QuizFlow.Models;
+using QuizFlow.Models.Enums;
 
 namespace QuizFlow.Application.Services
 {
@@ -14,11 +16,12 @@ namespace QuizFlow.Application.Services
         {
             _quizSessionRepository = quizSessionRepository;
         }
-        public async Task<Guid> StartSessionAsync(Guid userId, Guid QuizId)
+        public async Task<Guid> StartSessionAsync(Guid userId, Guid QuizId, string? groupName)
         {
             var session = new QuizSession
             {
                 QuizId = QuizId,
+                GroupName = groupName,
                 UserId = userId,
                 StartedAt = DateTime.UtcNow,
                 Score = 0
@@ -86,6 +89,54 @@ namespace QuizFlow.Application.Services
             await _quizSessionRepository.SaveChangesAsync();
             return true;
         }
+
+        public async Task<MultiplayerGamesResultsDTO> GetTeacherMultiplayerResultsAsync(MultiplayerGamesResultsDTO inputDto, Guid teacherId)
+        {
+            var sessions = await _quizSessionRepository.GetSessionsByTeacherAsync(teacherId);
+            IEnumerable<QuizSession> filteredSessions = sessions;
+
+            if (!string.IsNullOrEmpty(inputDto.title_filter))
+            {
+                filteredSessions = filteredSessions.Where(x => x.Quiz.Title.Contains(inputDto.title_filter)
+                ||
+                (!string.IsNullOrEmpty(x.GroupName) && x.GroupName.Contains(inputDto.title_filter)));
+            }
+
+            filteredSessions = (inputDto.universalDTO?.sortField, inputDto.universalDTO?.sortOrder) switch
+            {
+                ("Title", SortOrder.Descending) => filteredSessions.OrderByDescending(x => x.Quiz.Title),
+                ("Title", _) => filteredSessions.OrderBy(x => x.Quiz.Title),
+                ("Group", SortOrder.Descending) => filteredSessions.OrderByDescending(x => x.GroupName),
+                ("Group", _) => filteredSessions.OrderBy(x => x.GroupName),
+                ("Date", SortOrder.Descending) => filteredSessions.OrderByDescending(x => x.FinishedAt),
+                ("Date", _) => filteredSessions.OrderBy(x => x.FinishedAt),
+                _ => filteredSessions.OrderByDescending(x => x.GroupName)
+
+            }; 
+            
+            inputDto.universalDTO.TotalCount = filteredSessions.Count();
+
+            var pagedSessions = filteredSessions
+                .Skip((inputDto.universalDTO.PageNumber - 1) * inputDto.universalDTO.PageSize)
+                .Take(inputDto.universalDTO.PageSize)
+                .ToList();
+            return new MultiplayerGamesResultsDTO
+            {
+                universalDTO = inputDto.universalDTO,
+                title_filter = inputDto.title_filter,
+                userGames = pagedSessions.Select(x => new UserQuizSessionDTO
+                {
+                    SessionId = x.Id,
+                    QuizTitle = x.Quiz.Title,
+                    StudentName = x.Student.Name,
+                    GroupName = x.GroupName,
+                    Score = x.Score,
+                    FinishedAt = x.FinishedAt
+                }).ToList()
+            };
+        }
+
+
         public async Task<QuizSessionResultDTO> GetQuizResultAsync(Guid sessionId)
         {
             //we will have on the last page a button to finish the test
@@ -138,6 +189,12 @@ namespace QuizFlow.Application.Services
             };
 
 
+        }
+        public async Task DeleteQuizSessionAsync(Guid quizId)
+        {
+            var quiz = await _quizSessionRepository.GetByIdAsync(quizId);
+            await _quizSessionRepository.DeleteAsync(quizId);
+            await _quizSessionRepository.SaveChangesAsync();
         }
     }
 }

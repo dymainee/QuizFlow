@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using QuizFlow.Application.Interfaces;
 using QuizFlow.Application.Services;
 using QuizFlow.Data;
+using QuizFlow.Hubs;
 using QuizFlow.Infrastructure.Authentication;
 using QuizFlow.Infrastructure.Interfaces;
 using QuizFlow.Infrastructure.Repositories;
@@ -38,6 +39,9 @@ builder.Services.addAuth(builder.Configuration);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient();
+
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -55,7 +59,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapHub<QuizHub>("/quizHub");
 
 app.MapControllerRoute(
     name: "default",

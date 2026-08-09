@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using QuizFlow.Api;
 using QuizFlow.Application.Interfaces;
 using QuizFlow.Application.Services;
 using QuizFlow.DTO;
+using QuizFlow.Hubs;
 using QuizFlow.Models;
+using QuizFlow.Models.Enums;
 using System;
 using System.Net.Http;
 using System.Security.Claims;
@@ -18,16 +21,18 @@ namespace QuizFlow.Controllers
         private readonly HttpClient _httpClient;
         private readonly ILobbyService _lobbyService;
         private readonly IConfiguration _config;
+        private readonly IHubContext<QuizHub> _hubContext;
 
-        public QuizSessionController(IQuizSessionService quizSessionService, HttpClient httpClient, ILobbyService lobbyService, IConfiguration config)
+        public QuizSessionController(IQuizSessionService quizSessionService, HttpClient httpClient, ILobbyService lobbyService, IConfiguration config, IHubContext<QuizHub> hubContext)
         {
             _quizSessionService = quizSessionService;
             _httpClient = httpClient;
             _lobbyService = lobbyService;
             _config = config;
+            _hubContext = hubContext;
         }
         [HttpGet]
-        [Authorize(Roles = "Teacher")]  
+        [Authorize(Roles = "Teacher")]
         public IActionResult LobbyHost(Guid quizId) //this method we need to show groupname field
         {
             var lobby = new QuizMultiPlayerLobby
@@ -35,6 +40,19 @@ namespace QuizFlow.Controllers
                 QuizId = quizId,
             };
             return View("LobbyHost", lobby);
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteSessionQuizInStudent(Guid id)
+        {
+            await _quizSessionService.DeleteQuizSessionAsync(id);
+            return RedirectToAction("ShowStudentProfile", "User");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteSessionQuizInTeacher(Guid id)
+        {
+            await _quizSessionService.DeleteQuizSessionAsync(id);
+            return RedirectToAction("ShowStudentProfile", "User");
         }
         [HttpPost]
         [Authorize(Roles = "Teacher")]
@@ -48,7 +66,7 @@ namespace QuizFlow.Controllers
 
             _lobbyService.CreateLobby(lobby);
 
-            
+
             return RedirectToAction("ShowLobby", new { roomCode = roomCode }); //= roomCode) $\rightarrow$ подставляется как значение параметра (...=A8F2K9).
         }
         [HttpGet]
@@ -75,22 +93,53 @@ namespace QuizFlow.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Student")] // we can do as well join by code
         public IActionResult JoinLobby(string roomCode) //for student we will be returning waiting
         {
             var lobby = _lobbyService.GetLobby(roomCode);
             if (lobby == null) return NotFound("Could not find a room");
 
-            return View("LobbyStudent", lobby); 
+            return View("LobbyStudent", lobby); //qr will redirect all students to this page
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> StartMultiplayerQuiz(string roomCode) {
+            var lobby = _lobbyService.GetLobby(roomCode);
+            if (lobby == null) return NotFound();
+            //foreach (var user in lobby.ConnectedUsers)
+            //{
+            //  Guid sessionId = await _quizSessionService.StartSessionAsync(user, lobby.QuizId);
+            //}
+            await _hubContext.Clients.Group(roomCode).SendAsync("QuizStarted", lobby.QuizId, lobby.GroupName);
+            _lobbyService.RemoveLobby(roomCode);
+            return RedirectToAction("ShowAll", "Menu");
+        }
+        [HttpGet]
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> GetTeacherMultiplayerResults(MultiplayerGamesResultsDTO dto, string selectedSort)
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId = Guid.Parse(id);
+            if (string.IsNullOrEmpty(id)) return Unauthorized();
+            dto.universalDTO ??= new UniversalDTO();
+            if (!string.IsNullOrEmpty(selectedSort))
+            {
+                var parts = selectedSort.Split('_');
+                dto.universalDTO.sortField = parts[0];
+                dto.universalDTO.sortOrder = parts[1] == "Asc" ? SortOrder.Ascending : SortOrder.Descending;
+
+            }
+            MultiplayerGamesResultsDTO ouputdto = await _quizSessionService.GetTeacherMultiplayerResultsAsync(dto, userId);
+            return View(ouputdto);
+        }
 
         [HttpPost]
-        public async Task<IActionResult> StartQuizSession(Guid quizId)
+        public async Task<IActionResult> StartQuizSession(Guid quizId, string? GroupName)
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Guid currentUser = Guid.Parse(id);
-            Guid sessionId = await _quizSessionService.StartSessionAsync(currentUser, quizId);
+            Guid sessionId = await _quizSessionService.StartSessionAsync(currentUser, quizId, GroupName);
             return RedirectToAction("GetQuestion", new { sessionId = sessionId, questionNumber = 1 });
         }
 

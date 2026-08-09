@@ -24,6 +24,15 @@ namespace QuizFlow.Infrastructure.Repositories
             await _modelSet.AddAsync(quizSession);
         }
 
+        public async Task<List<QuizSession>> GetSessionsByTeacherAsync(Guid teacherId) {
+            return await _modelSet
+                .Include(x => x.Quiz)
+                .Include(x => x.Student)
+                .Where(x => x.Quiz.TeacherId == teacherId)
+                .ToListAsync();
+            
+        }
+
 
     }
 }

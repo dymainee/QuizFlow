@@ -21,14 +21,14 @@ namespace QuizFlow.Application.Services
                 return _lobbies.FirstOrDefault(x => x.RoomCode == roomCode);
             }
         }
-        public void AddUserToLobby(string roomCode, LobbyUser user)
+        public void AddUserToLobby(string roomCode, Guid userId)
         {
             lock (_lock)
             {
                 var lobby = _lobbies.FirstOrDefault(x => x.RoomCode == roomCode); //x — это абстрактное имя для одного конкретного элемента (модели)
-                if (lobby != null && !lobby.ConnectedUsers.Any(u => u.UserId == user.UserId))
+                if (lobby != null && !lobby.ConnectedUsers.Contains(userId))
                 {
-                    lobby.ConnectedUsers.Add(user);
+                    lobby.ConnectedUsers.Add(userId);
                 }
             }
         }

@@ -125,6 +125,16 @@
                                            class="btn btn-outline-primary btn-sm w-100">
                                             View Results
                                         </a>
+                                        <form asp-controller="QuizSession"
+                                              asp-action="DeleteSessionQuizInStudent"
+                                              asp-route-id="@game.SessionId"
+                                              method="post"
+                                              class="w-100 m-0">
+                                            <button type="submit"
+                                                    class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">
+                                                Delete
+                                            </button>
+                                        </form>
                                     </div>
 
                                 </div>

@@ -16,6 +16,8 @@ namespace QuizFlow.DTO
     {
         public Guid SessionId { get; set; }
         public string QuizTitle { get; set; } = string.Empty;
+        public string? StudentName { get; set; }
+        public string? GroupName { get; set; }
         public int Score { get; set; }
         public DateTime? FinishedAt { get; set; }
     }

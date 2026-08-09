@@ -25,7 +25,8 @@ namespace QuizFlow.Infrastructure.Authentication
             { // Он содержит готовые, общепринятые имена (ключи) для стандартных данных пользователя.
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim(ClaimTypes.Name, user.Name)
             };
 
             //Создаем секретный ключ и указываем алгоритм шифрования

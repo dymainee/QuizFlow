@@ -5,7 +5,7 @@
         <div class="col-12 col-md-8 col-lg-6">
                 <div class="card shadow-lg border-0 rounded-4 p-4 text-center">
                     <h2 class="fw-bold text-primary">Group Name: @Model.GroupName</h2>
-                    <h4 class="mt-2">Room number: <mark class="px-3 py-1 rounded">@Model.RoomCode</mark></h4>
+                    <h4 class="mt-2">Room number: @Model.RoomCode</h4>
                     <div class="my-4">
                     <img src="data:image/png;base64,@ViewBag.QrCodeBase64"
                          alt="Qr code to join"
@@ -15,6 +15,7 @@
                 </div>
 
                     <p class="text-muted">Ask students to scan the code</p>
+                <p class="text-muted">You can see students result in the Results after the test</p>
 
                     <hr class="my-4" />
 
@@ -28,7 +29,33 @@
                             Start quiz
                         </button>
                     </form>
-                </div>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+                <script>
+                    const roomCode = "@Model.RoomCode";
+
+                    // Создаем соединение с хабом
+                    const connection = new signalR.HubConnectionBuilder()
+                        .withUrl("/quizHub")
+                        .build();
+
+                    // Слушаем событие "PlayerJoined", которое мы отправляем из C# (QuizHub)
+                    connection.on("PlayerJoined", function (userName) {
+                        const ul = document.getElementById("playersList");
+
+                        // Создаем новый <li> с именем подключившегося ученика
+                        const li = document.createElement("li");
+                        li.className = "list-group-item list-group-item-success fw-bold";
+                        li.textContent = userName;
+
+                        ul.appendChild(li);
+                    });
+
+                    // Подключаемся к хабу и заходим в группу комнаты
+                    connection.start()
+                        .then(() => connection.invoke("JoinLobbyGroup", roomCode))
+                        .catch(err => console.error(" SignalR:", err));
+                </script>
+            </div>
         </div>
     </div>
 </div>
