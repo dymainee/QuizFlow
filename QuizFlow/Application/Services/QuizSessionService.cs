@@ -20,6 +20,7 @@ namespace QuizFlow.Application.Services
         {
             var session = new QuizSession
             {
+                Id = Guid.NewGuid(),
                 QuizId = QuizId,
                 GroupName = groupName,
                 UserId = userId,
