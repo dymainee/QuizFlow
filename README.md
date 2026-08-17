@@ -37,7 +37,7 @@
 
 ## QuizController & QuizService
 
-* Browser / View ? QuizController ? IQuizService ? IQuizRepository ? Database
+* Browser / View -> QuizController -> IQuizService -> IQuizRepository -> Database
 
 * **Quiz Creation:** Only teachers can create quizzes and upload quiz images.
 * **Question Management:** Add, edit, and delete questions and answer options.
@@ -48,7 +48,7 @@
 
 ## MenuController & MenuService
 
-* Browser / View ? MenuController ? IMenuService ? IMenuRepository ? Database
+* Browser / View -> MenuController -> IMenuService -> IMenuRepository -> Database
 
 * **Catalog:** Displays only published quizzes.
 * **Filtering:** Quizzes can be filtered by title.
@@ -58,7 +58,7 @@
 
 ## QuizSessionController & QuizSessionService
 
-Browser / View ? QuizSessionController ? IQuizSessionService / ILobbyService(in-memory room manager) ? Database / HttpClient(QR API)
+Browser / View -> QuizSessionController -> IQuizSessionService / ILobbyService(in-memory room manager) -> Database / HttpClient(QR API)
 
 * **Singleplayer:** Users can answer questions and view their results.
 * **Multiplayer:** Teachers can create rooms and students join using a room code or QR code.
@@ -69,7 +69,7 @@ Browser / View ? QuizSessionController ? IQuizSessionService / ILobbyService(in-
 
 ## UserController & UserService
 
-* Browser / View ? UserController ? IUserService ? IUserRepository ? Database
+* Browser / View -> UserController -> IUserService -> IUserRepository -> Database
 
 * **Registration:** Separate registration for teachers and students.
 * **Student Profile:** View quiz history, sort results, and update personal information.
@@ -92,15 +92,15 @@ Browser / View ? QuizSessionController ? IQuizSessionService / ILobbyService(in-
 
 ## 4.1 Main Relationships
 
-User ? Student / Teacher (1:1)
-Teacher ? Quiz (1:N)
-Quiz ? Question (1:N)
-Question ? AnswerOption (1:N)
-User ? Session (1:N)
-Quiz ? Session (1:N)
-Session ? SessionAnswer (1:N)
-Question ? SessionAnswer (1:N)
-AnswerOption ? SessionAnswer (1:N)
+User -> Student / Teacher (1:1)
+Teacher -> Quiz (1:N)
+Quiz -> Question (1:N)
+Question -> AnswerOption (1:N)
+User -> Session (1:N)
+Quiz -> Session (1:N)
+Session -> SessionAnswer (1:N)
+Question -> SessionAnswer (1:N)
+AnswerOption -> SessionAnswer (1:N)
 
 ## 5. Challenges & Solutions
 
